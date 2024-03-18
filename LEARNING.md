@@ -3,6 +3,12 @@ This file is intended to be a collection of articles and videos that can help ne
     working on YACS, specifically for webscraping. These are some resources I found useful when I began
     as a developer with no experience in webscraping or any sort of backend development experience. 
 
+As of right now, under each subsection there is not much information regarding each concept/library as 
+    there are links in the bibliography that refer to each item with its necessary information. But as the 
+    semester progresses, I can add information for each bulletpoint and expand on what to look
+    out for specifically when beginning to understand and use each concept/library in actual software 
+    development for the purposes of webscraping.
+
 # Important Concepts to Understand
 Python API:
 
