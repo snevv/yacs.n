@@ -3,12 +3,21 @@
         
 Grupman, Celeste. “Python API Tutorial: Getting Started with Apis.” Dataquest, 9 Apr. 2023, 
         www.dataquest.io/blog/python-api-tutorial/. 
+
+Howson, Steph. “Python XML Tutorial: Element Tree Parse & Read.” DataCamp, DataCamp, 6 Mar. 2018, 
+        www.datacamp.com/tutorial/python-xml-elementtree. 
         
 “An Intro to Threading in Python.” Real Python, Real Python, 22 May 2022, 
         realpython.com/intro-to-python-threading/. 
         
 “An Introduction to Selenium with Python.” Simplilearn.Com, Simplilearn, 28 Feb. 2023, 
         www.simplilearn.com/tutorials/python-tutorial/selenium-with-python. 
+
+“Universal Lxml Tutorial for Beginners and Pros.” Universal Lxml Tutorial for Beginners and Pros, 
+        oxylabs.io/blog/lxml-tutorial. Accessed 18 Mar. 2024. 
+
+“Web Scraping with Regex.” Web Scraping with RegEx, oxylabs.io/blog/regex-web-scraping. Accessed 18 
+        Mar. 2024. 
         
 “What Is an Application Programming Interface (API)?” IBM, www.ibm.com/topics/api. Accessed 14 Mar. 2024. 
 
