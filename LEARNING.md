@@ -20,7 +20,7 @@ XML:
 
 
 # Important Python Packages/Libraries to Understand
-Beautiful Soup:
+BeautifulSoup:
 
 
 LXML:
