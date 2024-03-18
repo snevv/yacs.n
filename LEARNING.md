@@ -9,7 +9,7 @@ As of right now, under each subsection there is not much information regarding e
     out for specifically when beginning to understand and use each concept/library in actual software 
     development for the purposes of webscraping.
 
-# Important Concepts to Understand
+# Important Concepts
 Python API:
 
 
@@ -19,7 +19,7 @@ RegEx:
 XML:
 
 
-# Important Python Packages/Libraries to Understand
+# Important Python Packages/Libraries
 BeautifulSoup:
 
 
