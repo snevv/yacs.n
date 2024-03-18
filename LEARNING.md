@@ -1,3 +1,34 @@
+# Intro 
+This file is intended to be a collection of articles and videos that can help new developers get started 
+    working on YACS, specifically for webscraping. These are some resources I found useful when I began
+    as a developer with no experience in webscraping or any sort of backend development experience. 
+
+# Important Concepts to Understand
+Python API:
+
+
+RegEx:
+
+
+XML:
+
+
+# Important Python Packages/Libraries to Understand
+Beautiful Soup:
+
+
+LXML:
+
+
+ElementTree:
+
+
+# Miscellaneous 
+Threading in Python:
+
+
+
+
 # Annotated Bibliography
 “Beautiful Soup Documentation¶.” Beautiful Soup Documentation - Beautiful Soup 4.12.0 Documentation, 
         www.crummy.com/software/BeautifulSoup/bs4/doc/. Accessed 14 Mar. 2024. 
@@ -27,16 +58,3 @@ Howson, Steph. “Python XML Tutorial: Element Tree Parse & Read.” DataCamp, D
         
 “Xml.Etree.ElementTree - The Elementtree XML API.” Python Documentation, 
         docs.python.org/3/library/xml.etree.elementtree.html. Accessed 14 Mar. 2024. 
-
-# Intro 
-This file is intended to be a collection of articles and videos that can help new developers get started 
-    working on YACS, specifically for webscraping. These are some resources I found useful when I began
-    as a developer with no experience in webscraping or any sort of backend development experience. 
-
-# Important Concepts to Understand
-
-
-
-# Important Python Packages to Understand
-
-
