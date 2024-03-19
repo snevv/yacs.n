@@ -3,11 +3,9 @@ This file is intended to be a collection of articles and videos that can help ne
     working on YACS, specifically for webscraping. These are some resources I found useful when I began
     as a developer with no experience in webscraping or any sort of backend development experience. 
 
-As of right now, under each subsection there is not much information regarding each concept/library as 
-    there are links in the bibliography that refer to each item with its necessary information. But as the 
-    semester progresses, I can add information for each bulletpoint and expand on what to look
-    out for specifically when beginning to understand and use each concept/library in YACS 
-    development for the purposes of webscraping.
+As of right now, every subsection is not fully complete in regards to information for each concept. I 
+    prioritized expanding on the concepts/libraries that took me longer to understand. Perhaps later,
+    I can come back and add to each bulletpoint with equal amounts of information.
 
 # Important Concepts
 Python API:
@@ -15,6 +13,8 @@ Python API:
 
 RegEx:
 
+    Regular expressions (RegEx) are employed in the code script to parse and extract specific information 
+    from the raw course data obtained through web scraping. 
 
 XML:
 
@@ -22,17 +22,21 @@ XML:
     function, the response from the YACS API is parsed using the `etree.parse()` method from the `lxml` library, 
     allowing the script to extract the current catalog ID from the XML response.
 
-    # XML Prolog
-    - The `XML_prolog` variable in the code script stores the XML prolog, which is an optional declaration that specifies the XML version and encoding used in the document.        In the context of the provided code, the `XML_prolog` is extracted from the XML response obtained from the YACS API. It ensures that the XML document is well-formed          and provides essential information about the document's encoding and version.
+    XML Prolog
+    - The `XML_prolog` variable in the code script stores the XML prolog, which is an optional declaration that 
+    specifies the XML version and encoding used in the document. In the context of the provided code, the `XML_prolog` 
+    is extracted from the XML response obtained from the YACS API. It ensures that the XML document is well-formed          
+    and provides essential information about the document's encoding and version.
 
-    # Catalog Root
-    - The `catalog_root` variable in the code script represents the root element of the XML response obtained from the YACS API. In XML terminology, the root element is the 
-      top-level element that encloses all other elements in the XML document. In the provided code, `catalog_root` encapsulates all the course-related information retrieved        from the YACS API, including course details such as name, description, prerequisites, etc.
+    Catalog Root
+    - The `catalog_root` variable in the code script represents the root element of the XML response obtained from 
+    the YACS API. In XML terminology, the root element is the top-level element that encloses all other elements 
+    in the XML document. 
 
-    # Catalog Detail Endpoint
-    - The `catalog_detail_endpoint` variable in the code script represents the endpoint URL for retrieving detailed catalog information from the YACS API. This endpoint is 
-      used to fetch data about the available catalogs, including the current catalog ID, which is necessary for further API requests. In the `get_current_catalog_id()` 
-      function, an HTTP GET request is made to this endpoint to obtain information about the current catalog, such as its ID.
+    Search Endpoint
+    - The `search_endpoint` variable in the code script represents the endpoint URL for searching and retrieving 
+    course information from the YACS API. This endpoint is used to search for and obtain a list of course IDs that
+    match specific criteria, such as the current catalog, department, or level. 
 
 
 # Important Python Packages/Libraries
@@ -48,6 +52,16 @@ ElementTree:
 # Miscellaneous 
 Threading in Python:
 
+
+Text Handling in HTTP Responses:
+
+    Encoding and Decoding
+    - Encoding converts a string into a sequence of bytes, while decoding converts a sequence of bytes 
+    back into a string. This is essential for handling different character encodings encountered in HTTP 
+    responses, ensuring that text data is correctly converted between bytes and strings.
+
+    Cleaning UTF Characters
+    
 
 
 
