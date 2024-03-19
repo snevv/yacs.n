@@ -48,6 +48,16 @@ LXML:
 
 ElementTree:
 
+    Once XML responses are obtained, the script constructs ElementTree objects to represent the hierarchical structure 
+    of the XML documents. Each ElementTree corresponds to a parsed XML document, with elements representing nodes in 
+    the XML tree and attributes representing properties of those nodes.
+
+    XPath
+    - XPath expressions can navigate through nested XML structures, allowing the script to access data at different 
+    levels of hierarchy. This is particularly useful when dealing with complex XML documents containing nested 
+    elements or multiple levels of nesting. For instance, in the get_all_courses() function, XPath is utilized to 
+    traverse through the XML tree and extract course details from nested <field> elements within each <course> element.
+
 
 # Miscellaneous 
 Threading in Python:
@@ -61,13 +71,11 @@ Text Handling in HTTP Responses:
     responses, ensuring that text data is correctly converted between bytes and strings.
 
     Cleaning UTF Characters
-    The 'clean_utf' function is utilized to normalize Unicode characters in the text data. Unicode characters 
+    - The 'clean_utf' function is utilized to normalize Unicode characters in the text data. Unicode characters 
     can have multiple representations, and normalization ensures that they are converted into a standardized 
     form. This process enhances consistency and uniformity in text data, making it easier to compare and 
     process strings.
     
-
-
 
 # Annotated Bibliography
 “Beautiful Soup Documentation¶.” Beautiful Soup Documentation - Beautiful Soup 4.12.0 Documentation, 
