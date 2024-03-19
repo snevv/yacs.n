@@ -22,6 +22,18 @@ XML:
     function, the response from the YACS API is parsed using the `etree.parse()` method from the `lxml` library, 
     allowing the script to extract the current catalog ID from the XML response.
 
+    # XML Prolog
+    - The `XML_prolog` variable in the code script stores the XML prolog, which is an optional declaration that specifies the XML version and encoding used in the document.        In the context of the provided code, the `XML_prolog` is extracted from the XML response obtained from the YACS API. It ensures that the XML document is well-formed          and provides essential information about the document's encoding and version.
+
+    # Catalog Root
+    - The `catalog_root` variable in the code script represents the root element of the XML response obtained from the YACS API. In XML terminology, the root element is the 
+      top-level element that encloses all other elements in the XML document. In the provided code, `catalog_root` encapsulates all the course-related information retrieved        from the YACS API, including course details such as name, description, prerequisites, etc.
+
+    # Catalog Detail Endpoint
+    - The `catalog_detail_endpoint` variable in the code script represents the endpoint URL for retrieving detailed catalog information from the YACS API. This endpoint is 
+      used to fetch data about the available catalogs, including the current catalog ID, which is necessary for further API requests. In the `get_current_catalog_id()` 
+      function, an HTTP GET request is made to this endpoint to obtain information about the current catalog, such as its ID.
+
 
 # Important Python Packages/Libraries
 BeautifulSoup:
