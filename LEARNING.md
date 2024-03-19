@@ -17,6 +17,9 @@ RegEx:
 
 
 XML:
+    The code script interacts with XML data provided by the YACS API. For instance, in the `get_current_catalog_id()` 
+    function, the response from the YACS API is parsed using the `etree.parse()` method from the `lxml` library, 
+    allowing the script to extract the current catalog ID from the XML response.
 
 
 # Important Python Packages/Libraries
