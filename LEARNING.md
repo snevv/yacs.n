@@ -4,7 +4,7 @@ This file is intended to be a collection of articles and videos that can help ne
     as a developer with no experience in webscraping or any sort of backend development experience. 
 
 As of right now, every subsection is not fully complete in regards to information for each concept. I 
-    prioritized expanding on the concepts/libraries that took me longer to understand. Perhaps later,
+    prioritized expanding on the concepts/libraries that took me longer to understand. Maybe later,
     I can come back and add to each bulletpoint with equal amounts of information.
 
 # Important Concepts
