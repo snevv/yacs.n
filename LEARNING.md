@@ -22,18 +22,18 @@ XML:
     function, the response from the YACS API is parsed using the `etree.parse()` method from the `lxml` library, 
     allowing the script to extract the current catalog ID from the XML response.
 
-    **XML Prolog**
+    XML Prolog
     - The `XML_prolog` variable in the code script stores the XML prolog, which is an optional declaration that 
     specifies the XML version and encoding used in the document. In the context of the provided code, the `XML_prolog` 
     is extracted from the XML response obtained from the YACS API. It ensures that the XML document is well-formed          
     and provides essential information about the document's encoding and version.
 
-    **Catalog Root**
+    Catalog Root
     - The `catalog_root` variable in the code script represents the root element of the XML response obtained from 
     the YACS API. In XML terminology, the root element is the top-level element that encloses all other elements 
     in the XML document. 
 
-    **Search Endpoint**
+    Search Endpoint
     - The `search_endpoint` variable in the code script represents the endpoint URL for searching and retrieving 
     course information from the YACS API. This endpoint is used to search for and obtain a list of course IDs that
     match specific criteria, such as the current catalog, department, or level. 
@@ -55,12 +55,16 @@ Threading in Python:
 
 Text Handling in HTTP Responses:
 
-    **Encoding and Decoding**
+    Encoding and Decoding
     - Encoding converts a string into a sequence of bytes, while decoding converts a sequence of bytes 
     back into a string. This is essential for handling different character encodings encountered in HTTP 
     responses, ensuring that text data is correctly converted between bytes and strings.
 
-    **Cleaning UTF Characters**
+    Cleaning UTF Characters
+    The 'clean_utf' function is utilized to normalize Unicode characters in the text data. Unicode characters 
+    can have multiple representations, and normalization ensures that they are converted into a standardized 
+    form. This process enhances consistency and uniformity in text data, making it easier to compare and 
+    process strings.
     
 
 
