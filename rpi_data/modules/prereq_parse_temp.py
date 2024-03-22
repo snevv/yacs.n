@@ -124,10 +124,10 @@ class PrereqParse:
             if (match is None):
                 raise Exception("XML document is missing prolog and root. Invalid.")
             # For some reason, the response is sometimes missing the XML prolog. Not sure how it's possible, but give default in that case.
-            self._xml_prolog = match.group("prolog") if match.group("prolog") is not None else '<?xml version="1.0"?>'
+            self._xmlProlog = match.group("prolog") if match.group("prolog") is not None else '<?xml version="1.0"?>'
             if match.group("root") is None:
                 raise Exception("XML document is missing root element. Invalid.")
-            self._catalog_root = match.group("root")
+            self._catalogRoot = match.group("root")
             self._courseDetailsXMLStr.append(allow_for_extension_regex.sub("", course_details_xml_str))
         
     def getCoursesXMLStr(self, ids):
@@ -152,26 +152,26 @@ class PrereqParse:
     def getAllCourses(self, ids):
         courses_xml_str = self.getCoursesXMLStr(ids)
         parser = etree.XMLParser(encoding="utf-8")
-        # tree = etree.parse(StringIO(courses_xml_str), parser=parser)
-        # # https://stackoverflow.com/a/4256011/8088388
-        # course_content_xml = tree.getroot().xpath("//*[local-name() = 'course']/*[local-name() = 'content']")
-        # courses = []
-        # for raw_course in course_content_xml:
-        #     if (self._is_actual_course(raw_course)):
-        #         field_values = {}
-        #         used_standard_fields = filter(lambda key: key in ACALOG_COURSE_FIELDS and USED_FIELDS[key], USED_FIELDS)
-        #         used_custom_fields = filter(lambda key: key not in ACALOG_COURSE_FIELDS and USED_FIELDS[key], USED_FIELDS)
-        #         for field_name in used_standard_fields:
-        #             # A <field>, like description, can have multiple children tags, so get all text nodes.
-        #             # One example of this is ARCH 4870 - Sonics Research Lab 1, catalog 20, courseid 38592
-        #             value = ("".join(raw_course.xpath(f"*[local-name() = 'field'][@type='{ACALOG_COURSE_FIELDS[field_name]}']//text()"))).replace("\n", "").replace("\r","").strip()
-        #             if field_name == 'description':
-        #                 field_values['description'] = self._clean_utf(value).encode("utf8").decode("utf8")
-        #             else:
-        #                 field_values[field_name] = self._clean_utf(value)
-        #         if (len(field_values) > 0):
-        #             courses.append(field_values)
-        # return 0
+        tree = etree.parse(StringIO(courses_xml_str), parser=parser)
+        # https://stackoverflow.com/a/4256011/8088388
+        course_content_xml = tree.getroot().xpath("//*[local-name() = 'course']/*[local-name() = 'content']")
+        courses = []
+        for raw_course in course_content_xml:
+            if (self._is_actual_course(raw_course)):
+                field_values = {}
+                used_standard_fields = filter(lambda key: key in ACALOG_COURSE_FIELDS and USED_FIELDS[key], USED_FIELDS)
+                used_custom_fields = filter(lambda key: key not in ACALOG_COURSE_FIELDS and USED_FIELDS[key], USED_FIELDS)
+                for field_name in used_standard_fields:
+                    # A <field>, like description, can have multiple children tags, so get all text nodes.
+                    # One example of this is ARCH 4870 - Sonics Research Lab 1, catalog 20, courseid 38592
+                    value = ("".join(raw_course.xpath(f"*[local-name() = 'field'][@type='{ACALOG_COURSE_FIELDS[field_name]}']//text()"))).replace("\n", "").replace("\r","").strip()
+                    if field_name == 'description':
+                        field_values['description'] = self._clean_utf(value).encode("utf8").decode("utf8")
+                    else:
+                        field_values[field_name] = self._clean_utf(value)
+                if (len(field_values) > 0):
+                    courses.append(field_values)
+        return 0
     
     # Adds all course details in xml format to courseDetailsXMLStr class attribute 
     def getAllCourseDetails(self):
