@@ -46,6 +46,45 @@ USED_FIELDS = {
     "contact_lecture_lab_hours": False,
 }
 
+# group the most specific regex patterns first, then the more general ones for last
+# goal is to capture classes that are loosely of the form "Prerequisites: [CAPTURE COURSE LISTINGS TEXT]",
+# but does not capture classes explicitly stated to be corequisites. Tries to remove
+# periods, trailing and leading space.
+explicit_prereqs_include_syntax_regex = "(?:^\s*Prerequisites? include:?\s?(.*))"
+explicit_prereqs_preference_syntax_regex = "(?:^\s*Prerequisites? preferences?:?\s*(.*))"
+explicit_prereqs_explicit_or_coreqs_syntax_regex = "(?:^\s*Prerequisites? or Corequisites?:?\s?(.*))|(?:(.+?)corequisites?.*?or prerequisites?)|(?:(.+?)prerequisites?.*?or corequisites?)"
+explicit_prereqs_implicit_or_coreqs_syntax_regex = "(?:^Prerequisites?\/Corequisites?:?\s*(.*))"
+explicit_prereqs_before_coreqs_syntax_regex = "(?:^\s*Prerequisites?.*?:\s?(.*?(?=\W*Coreq)))"
+explicit_prereqs_sequence_syntax_regex = "(?:\s*Prerequisites?:?\s*(.+(?=[\. ;,])*))"
+# https://stackoverflow.com/questions/406230/regular-expression-to-match-a-line-that-doesnt-contain-a-word
+# doesn't contain a "prerequisites:" sort of string
+# if there is leading space then it will be captured. I'm not sure how to not capture it.
+implicit_prereqs_syntax_regex = "(^((?!(Corequisite)).)*$)"
+implicit_prereqs_before_coreqs_syntax_regex = "(?:^\s*(.+?(?=\W*[^(is)(are)] Coreq)))"
+full_prereqs_regex = "|".join([
+    explicit_prereqs_include_syntax_regex,
+    explicit_prereqs_preference_syntax_regex,
+    explicit_prereqs_explicit_or_coreqs_syntax_regex,
+    explicit_prereqs_implicit_or_coreqs_syntax_regex,
+    explicit_prereqs_before_coreqs_syntax_regex,
+    explicit_prereqs_sequence_syntax_regex,
+    implicit_prereqs_syntax_regex,
+    implicit_prereqs_before_coreqs_syntax_regex
+])
+# https://stackoverflow.com/a/44463324/8088388
+branch_reset_prereqs_regex = regex.compile(f"(?|{full_prereqs_regex})", flags=regex.IGNORECASE|regex.DOTALL)
+
+explicit_coreqs_before_prereqs_syntax_regex = "(?:^\s*Corequisites?.*?:\s?(.*?(?=\W*Prereq)))"
+explicit_coreqs_sequence_syntax_regex = "(?:\s*Corequisites?:?\s*(.+(?=[\. ;,])*))"
+explicit_coreqs_qualified_at_end_of_sequence_regex = "(?:(.+?)(?:(?:is(?: a)?)|are) corequisites?)"
+full_coreqs_regex = "|".join([
+    explicit_prereqs_explicit_or_coreqs_syntax_regex,
+    explicit_prereqs_implicit_or_coreqs_syntax_regex,
+    explicit_coreqs_before_prereqs_syntax_regex,
+    explicit_coreqs_sequence_syntax_regex,
+    explicit_coreqs_qualified_at_end_of_sequence_regex
+])
+branch_reset_coreqs_regex = regex.compile(f"(?|{full_coreqs_regex})", flags=regex.IGNORECASE|regex.DOTALL)
 COURSE_DETAIL_TIMEOUT = 120.00 # seconds
 
 allow_for_extension_regex = re.compile("(<catalog.*?>)|(<\/catalog>)|(<\?xml.*?\?>)")
@@ -66,6 +105,7 @@ class PrereqParse:
         self._catalogRoot = ""
         self.chunkSize = 100
         self.courses = dict()
+        self.xml_strings = []
         
     def _all_threads_joined(self, threads):
         for thread in threads:
@@ -105,7 +145,6 @@ class PrereqParse:
         
     #Return the endpoint of the course ids
     def getCourseIds(self):
-        # pdb.set_trace()
         #http://rpi.apis.acalog.com/v2/search/courses?key=3eef8a28f26fb2bcc514e6f1938929a1f9317628&format=xml&method=listing&catalog=26&options[limit]=0
         xmlLink = (f"{self.search_endpoint}key={self.key}&format={self.resFormat}&method=listing&catalog={self.catalogId}&options[limit]=0")
         idXML = req.get(xmlLink).content.decode("utf8") #The xml is returned as bytes, so we need to turn it into a string
@@ -128,7 +167,8 @@ class PrereqParse:
             if match.group("root") is None:
                 raise Exception("XML document is missing root element. Invalid.")
             self._catalogRoot = match.group("root")
-            self._courseDetailsXMLStr.append(allow_for_extension_regex.sub("", course_details_xml_str))
+            courses_xml_str = self._xmlProlog + self._catalogRoot + course_details_xml_str + "</catalog>"
+            self.xml_strings.append(course_details_xml_str)
         
     def getCoursesXMLStr(self, ids):
         course_count = len(ids)
@@ -145,43 +185,78 @@ class PrereqParse:
         while True:
             if self._all_threads_joined(thread_jobs):
                 break
-        courses_xml = self._xmlProlog + self._catalogRoot + "".join(self._courseDetailsXMLStr) + "</catalog>"
-        return courses_xml
-        
-    #Return a dictionary of every course in the catalog
-    def getAllCourses(self, ids):
-        courses_xml_str = self.getCoursesXMLStr(ids)
+            
+    def _extract_prereq_from_precoreq_str(self, precoreqs):
+        match = regex.search(branch_reset_prereqs_regex, precoreqs)
+        if (match is not None):
+            if len(match.groups()) > 0:
+                return match.groups()[0]
+        return ""
+    
+    def fetch_course_details(self, xml_string):
+        courses_xml_str = xml_string
         parser = etree.XMLParser(encoding="utf-8")
         tree = etree.parse(StringIO(courses_xml_str), parser=parser)
-        # https://stackoverflow.com/a/4256011/8088388
         course_content_xml = tree.getroot().xpath("//*[local-name() = 'course']/*[local-name() = 'content']")
-        courses = []
+        chunk_courses = []
         for raw_course in course_content_xml:
             if (self._is_actual_course(raw_course)):
                 field_values = {}
                 used_standard_fields = filter(lambda key: key in ACALOG_COURSE_FIELDS and USED_FIELDS[key], USED_FIELDS)
                 used_custom_fields = filter(lambda key: key not in ACALOG_COURSE_FIELDS and USED_FIELDS[key], USED_FIELDS)
+                
                 for field_name in used_standard_fields:
-                    # A <field>, like description, can have multiple children tags, so get all text nodes.
-                    # One example of this is ARCH 4870 - Sonics Research Lab 1, catalog 20, courseid 38592
                     value = ("".join(raw_course.xpath(f"*[local-name() = 'field'][@type='{ACALOG_COURSE_FIELDS[field_name]}']//text()"))).replace("\n", "").replace("\r","").strip()
                     if field_name == 'description':
                         field_values['description'] = self._clean_utf(value).encode("utf8").decode("utf8")
                     else:
                         field_values[field_name] = self._clean_utf(value)
                 if (len(field_values) > 0):
-                    courses.append(field_values)
-        return 0
+                    chunk_courses.append(field_values)
+                    
+                for field_name in used_custom_fields:
+                    if field_name == 'id':
+                        course_id = re.search("(?P<id>\d+)$", raw_course.getparent().attrib["id"]).group("id")
+                        field_values['id'] = course_id
+                    elif field_name == 'prerequisites':
+                        if 'raw_precoreqs' in field_values:
+                            field_values['raw_precoreqs'] = ''
+                            field_values['prerequisites'] = ''
+                    elif field_name == 'corequisites':
+                        if 'raw_precoreqs' in field_values:
+                            field_values['raw_precoreqs'] = ''
+                            field_values['corequisites'] = ''
+                    elif field_name == 'short_name':
+                        if 'department' in field_values and 'level' in field_values:
+                            field_values['short_name'] = field_values['department'] + '-' + field_values['level']
+
+                            
+        return chunk_courses
     
-    # Adds all course details in xml format to courseDetailsXMLStr class attribute 
-    def getAllCourseDetails(self):
-        return 0
+    def getAllCourses(self, ids):
+        self.getCoursesXMLStr(ids)
+        courses = []
+        thread_jobs = []
+
+        for xml in self.xml_strings:
+            fetch_course_details_job = threading.Thread(target=lambda: courses.extend(self.fetch_course_details(xml)), daemon=False)
+            thread_jobs.append(fetch_course_details_job)
+            fetch_course_details_job.start()
+
+        # Wait for all threads to finish
+        while True:
+            if self._all_threads_joined(thread_jobs):
+                break
+
+        return courses
             
     #Runs the program
     def run(self, year):
         self.catalogId = self.getCataId(year)
         ids = self.getCourseIds()
-        courses = self.getAllCourses(ids)
+        self.courses = self.getAllCourses(ids)
+        # for course in self.courses:
+        #     print(course,end='\n')
         #self.getAllCourseDetails(ids)
 
 def main():
